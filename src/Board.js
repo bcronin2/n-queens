@@ -118,11 +118,12 @@
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
       var diagonalSum = 0;
-      for (var i = 0; i < this.get('n'); i++) {
+      var startRow = (majorDiagonalColumnIndexAtFirstRow >= 0) ? 0 : -majorDiagonalColumnIndexAtFirstRow;
+      var endRow = (majorDiagonalColumnIndexAtFirstRow >= 0) ? majorDiagonalColumnIndexAtFirstRow : this.get('n') - 1;
+
+      for (var i = startRow; i <= endRow; i++) {
         var currentCol = majorDiagonalColumnIndexAtFirstRow + i;
-        if (currentCol >= 0 && currentCol < this.get('n')) {
-          diagonalSum += this.rows()[i][currentCol];
-        }
+        diagonalSum += this.rows()[i][currentCol];
       }
       return diagonalSum > 1;
     },
@@ -145,11 +146,12 @@
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
       var diagonalSum = 0;
-      for (var i = 0; i < this.get('n'); i++) {
+      var startRow = (minorDiagonalColumnIndexAtFirstRow < this.get('n')) ? 0 : minorDiagonalColumnIndexAtFirstRow - (this.get('n') - 1);
+      var endRow = (minorDiagonalColumnIndexAtFirstRow < this.get('n')) ? minorDiagonalColumnIndexAtFirstRow : this.get('n') - 1;
+
+      for (var i = startRow; i <= endRow; i++) {
         var currentCol = minorDiagonalColumnIndexAtFirstRow - i;
-        if (currentCol >= 0 && currentCol < this.get('n')) {
-          diagonalSum += this.rows()[i][currentCol];
-        }
+        diagonalSum += this.rows()[i][currentCol];
       }
       return diagonalSum > 1;
     },

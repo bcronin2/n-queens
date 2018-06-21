@@ -106,7 +106,6 @@ window.findNSolutionHelper = function(board, rowIndex, availableCols, isQueens) 
   }
 };
 
-
 window.countNSolutionHelper = function(board, rowIndex, availableCols, isQueens) {
   // window.calls++;
   var count = 0;

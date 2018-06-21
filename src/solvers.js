@@ -19,7 +19,7 @@ window.findNRooksSolution = function(n) {
 
     // window.calls = 0;
 
-    findNSolutionHelper(board, 0, 'Rooks');
+    findNSolutionHelper(board, 0, 'rooks');
   }
 
   // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' ROOKS SOLUTION: ' + window.calls);
@@ -38,7 +38,7 @@ window.countNRooksSolutions = function(n) {
   // window.calls = 0;
 
   var board = new Board({n: n});
-  var solutionCount = countNSolutionHelper(board, 0, 'Rooks');
+  var solutionCount = countNSolutionHelper(board, 0, 'rooks');
 
   // console.log('RECURSIVE CALLS FOR COUNTING ' + n + ' ROOKS SOLUTIONS: ' + window.calls);
 
@@ -54,7 +54,7 @@ window.findNQueensSolution = function(n) {
 
     // window.calls = 0;
     
-    findNSolutionHelper(board, 0, 'Queens');
+    findNSolutionHelper(board, 0, 'queens');
   }
 
   // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' QUEENS SOLUTION: window.calls');
@@ -73,7 +73,7 @@ window.countNQueensSolutions = function(n) {
   // window.calls = 0;
 
   var board = new Board({n: n});
-  var solutionCount = countNSolutionHelper(board, 0, 'Queens');
+  var solutionCount = countNSolutionHelper(board, 0, 'queens');
 
   // console.log('COUNTING RECURSIVE CALLS FOR COUNTING ' + n + ' QUEENS SOLUTIONS: window.calls');
 
@@ -81,11 +81,19 @@ window.countNQueensSolutions = function(n) {
   return solutionCount;
 };
 
+
+// HELPERS
+
+const checkerNames = {
+  rooks: 'hasAnyRooksConflicts', 
+  queens: 'hasAnyQueenConflictsOn'
+};
+
 window.findNSolutionHelper = function(board, rowIndex, type) {
   // window.calls++;
   for (var i = 0; i < board.get('n'); i++) {
     board.togglePiece(rowIndex, i);
-    if (board['hasAny' + type + 'Conflicts']()) {
+    if (rowIndex && board[checkerNames[type]](rowIndex, i)) {
       board.togglePiece(rowIndex, i);
     } else {     
       if (rowIndex < board.get('n') - 1) {
@@ -108,7 +116,7 @@ window.countNSolutionHelper = function(board, rowIndex, type) {
   var lastCol = board.get('n');
   for (var i = 0; i < lastCol; i++) {
     board.togglePiece(rowIndex, i);
-    if (board['hasAny' + type + 'Conflicts']()) {
+    if (rowIndex && board[checkerNames[type]](rowIndex, i)) {
       board.togglePiece(rowIndex, i);
     } else {     
       if (rowIndex < board.get('n') - 1) {
@@ -121,4 +129,12 @@ window.countNSolutionHelper = function(board, rowIndex, type) {
   }
   return count;
 };
+
+// window.findNSolutionHelperBitwise = function(board, rowIndex) {
+ 
+// };
+
+// window.countNSolutionHelperBitwise = function(board, rowIndex) {
+ 
+// };
 

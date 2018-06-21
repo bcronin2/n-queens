@@ -18,8 +18,8 @@ window.findNRooksSolution = function(n) {
   if (n > 0) {
 
     // window.calls = 0;
-
-    findNSolutionHelper(board, 0, 'rooks');
+    var availableCols = initializeAvailableCols(n);
+    findNSolutionHelper(board, 0, availableCols);
   }
 
   // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' ROOKS SOLUTION: ' + window.calls);
@@ -38,7 +38,8 @@ window.countNRooksSolutions = function(n) {
   // window.calls = 0;
 
   var board = new Board({n: n});
-  var solutionCount = countNSolutionHelper(board, 0, 'rooks');
+  var availableCols = initializeAvailableCols(n);  
+  var solutionCount = countNSolutionHelper(board, 0, availableCols);
 
   // console.log('RECURSIVE CALLS FOR COUNTING ' + n + ' ROOKS SOLUTIONS: ' + window.calls);
 
@@ -53,8 +54,9 @@ window.findNQueensSolution = function(n) {
   if (n > 0) {
 
     // window.calls = 0;
-    
-    findNSolutionHelper(board, 0, 'queens');
+
+    var availableCols = initializeAvailableCols(n);    
+    findNSolutionHelper(board, 0, availableCols, true);
   }
 
   // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' QUEENS SOLUTION: window.calls');
@@ -73,7 +75,8 @@ window.countNQueensSolutions = function(n) {
   // window.calls = 0;
 
   var board = new Board({n: n});
-  var solutionCount = countNSolutionHelper(board, 0, 'queens');
+  var availableCols = initializeAvailableCols(n);  
+  var solutionCount = countNSolutionHelper(board, 0, availableCols, true);
 
   // console.log('RECURSIVE CALLS FOR COUNTING ' + n + ' QUEENS SOLUTIONS: window.calls');
 
@@ -84,47 +87,89 @@ window.countNQueensSolutions = function(n) {
 
 // HELPERS
 
-const checkerNames = {
-  rooks: 'hasAnyRooksConflicts', 
-  queens: 'hasAnyQueensConflicts'
+window.initializeAvailableCols = function(n) {
+  var availableCols = [];
+
+  for (var i = 0; i < n; i++) {
+    availableCols.push(1);
+  }
+
+  return availableCols;
 };
 
-window.findNSolutionHelper = function(board, rowIndex, type) {
+window.findNSolutionHelper = function(board, rowIndex, availableCols, isQueens) {
   // window.calls++;
-  for (var i = 0; i < board.get('n'); i++) {
+  for (var i = 0; i < availableCols.length; i++) {
+
+    if (!availableCols[i]) continue;
     board.togglePiece(rowIndex, i);
-    if (board[checkerNames[type]]()) {
+    availableCols[i] = 0;
+
+    if (isQueens && (board.hasMajorDiagonalConflictAt(i - rowIndex)) ||
+        board.hasMinorDiagonalConflictAt(i + rowIndex)) {
       board.togglePiece(rowIndex, i);
-    } else {     
+      availableCols[i] = 1;
+    } 
+
+    else {     
+    
       if (rowIndex < board.get('n') - 1) {
-        var result = findNSolutionHelper(board, rowIndex + 1, type);
+        
+        var result = findNSolutionHelper(board, rowIndex + 1, availableCols, isQueens);
+    
         if (result) {
           return true;
-        } else {
+        } 
+
+        else {
           board.togglePiece(rowIndex, i);
+          availableCols[i] = 1;
         }
-      } else {
+
+      } 
+
+      else {
         return true;
       }
+
     }
+
   }
+
 };
 
-window.countNSolutionHelper = function(board, rowIndex, type) {
+window.countNSolutionHelper = function(board, rowIndex, availableCols, isQueens) {
   // window.calls++;
   var count = 0;
-  for (var i = 0; i < board.get('n'); i++) {
+  for (var i = 0; i < availableCols.length; i++) {
+
+    if (!availableCols[i]) continue;
     board.togglePiece(rowIndex, i);
-    if (board[checkerNames[type]](rowIndex, i)) {
+    availableCols[i] = 0;
+
+    if (isQueens && (board.hasMajorDiagonalConflictAt(i - rowIndex) ||
+        board.hasMinorDiagonalConflictAt(i + rowIndex))) {
       board.togglePiece(rowIndex, i);
-    } else {     
-      if (rowIndex < board.get('n') - 1) {
-        count += countNSolutionHelper(board, rowIndex + 1, type);
-      } else {
-        count++;
-      }
-      board.togglePiece(rowIndex, i);
+      availableCols[i] = 1;
     }
+
+    else {  
+
+      if (rowIndex < board.get('n') - 1) {
+        count += countNSolutionHelper(board, rowIndex + 1, availableCols, isQueens);        
+      } 
+
+      board.togglePiece(rowIndex, i);
+      availableCols[i] = 1;
+      
+      if (rowIndex === board.get('n') - 1) {
+        return 1;
+      }
+
+    }
+
   }
+
   return count;
+
 };

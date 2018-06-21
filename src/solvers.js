@@ -75,7 +75,7 @@ window.countNQueensSolutions = function(n) {
   var board = new Board({n: n});
   var solutionCount = countNSolutionHelper(board, 0, 'queens');
 
-  // console.log('COUNTING RECURSIVE CALLS FOR COUNTING ' + n + ' QUEENS SOLUTIONS: window.calls');
+  // console.log('RECURSIVE CALLS FOR COUNTING ' + n + ' QUEENS SOLUTIONS: window.calls');
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;

@@ -31,7 +31,7 @@ window.findNRooksSolution = function(n) {
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 // TIME COMPLEXITY: O(n!) (recursive calls to countNSolutionHelper)
 window.countNRooksSolutions = function(n) {
-  if (n === 0) {
+  if (n <= 1) {
     return 1;
   }
 
@@ -66,7 +66,7 @@ window.findNQueensSolution = function(n) {
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 // TIME COMPLEXITY: O(~2.5^n) (recursive calls to countNSolutionHelper)
 window.countNQueensSolutions = function(n) {
-  if (n === 0) {
+  if (n <= 0) {
     return 1;
   }
 
@@ -113,8 +113,7 @@ window.findNSolutionHelper = function(board, rowIndex, type) {
 window.countNSolutionHelper = function(board, rowIndex, type) {
   // window.calls++;
   var count = 0;
-  var lastCol = board.get('n');
-  for (var i = 0; i < lastCol; i++) {
+  for (var i = 0; i < board.get('n'); i++) {
     board.togglePiece(rowIndex, i);
     if (rowIndex && board[checkerNames[type]](rowIndex, i)) {
       board.togglePiece(rowIndex, i);

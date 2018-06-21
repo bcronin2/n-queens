@@ -12,50 +12,77 @@
 
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
+// TIME COMPLEXITY: O(n) (recursive calls to findNSolutionHelper)
 window.findNRooksSolution = function(n) {
   var board = new Board({n: n});
   if (n > 0) {
+
+    // window.calls = 0;
+
     findNSolutionHelper(board, 0, 'Rooks');
   }
+
+  // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' ROOKS SOLUTION: ' + window.calls);
+
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board.rows()));
   return board.rows();
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
+// TIME COMPLEXITY: O(n!) (recursive calls to countNSolutionHelper)
 window.countNRooksSolutions = function(n) {
   if (n === 0) {
     return 1;
   }
+
+  // window.calls = 0;
+
   var board = new Board({n: n});
   var solutionCount = countNSolutionHelper(board, 0, 'Rooks');
+
+  // console.log('RECURSIVE CALLS FOR COUNTING ' + n + ' ROOKS SOLUTIONS: ' + window.calls);
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
+// TIME COMPLEXITY: O(n^2) (recursive calls to findNSolutionHelper)
 window.findNQueensSolution = function(n) {
   var board = new Board({n: n});
   if (n > 0) {
+
+    // window.calls = 0;
+    
     findNSolutionHelper(board, 0, 'Queens');
   }
+
+  // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' QUEENS SOLUTION: window.calls');
+
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(board.rows()));
   return board.rows();
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
+// TIME COMPLEXITY: O(~2.5^n) (recursive calls to countNSolutionHelper)
 window.countNQueensSolutions = function(n) {
   if (n === 0) {
     return 1;
   }
+
+  // window.calls = 0;
+
   var board = new Board({n: n});
-  var solutionCount = countNSolutionHelper(board, 0, 'Queens'); 
+  var solutionCount = countNSolutionHelper(board, 0, 'Queens');
+
+  // console.log('COUNTING RECURSIVE CALLS FOR COUNTING ' + n + ' QUEENS SOLUTIONS: window.calls');
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
 };
 
 window.findNSolutionHelper = function(board, rowIndex, type) {
+  // window.calls++;
   for (var i = 0; i < board.get('n'); i++) {
     board.togglePiece(rowIndex, i);
     if (board['hasAny' + type + 'Conflicts']()) {
@@ -76,8 +103,10 @@ window.findNSolutionHelper = function(board, rowIndex, type) {
 };
 
 window.countNSolutionHelper = function(board, rowIndex, type) {
+  // window.calls++;
   var count = 0;
-  for (var i = 0; i < board.get('n'); i++) {
+  var lastCol = board.get('n');
+  for (var i = 0; i < lastCol; i++) {
     board.togglePiece(rowIndex, i);
     if (board['hasAny' + type + 'Conflicts']()) {
       board.togglePiece(rowIndex, i);

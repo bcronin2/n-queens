@@ -16,14 +16,11 @@
 window.findNRooksSolution = function(n) {
   var board = new Board({n: n});
   if (n > 0) {
-
     // window.calls = 0;
     var availableCols = initializeAvailableCols(n);
     findNSolutionHelper(board, 0, availableCols);
   }
-
   // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' ROOKS SOLUTION: ' + window.calls);
-
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board.rows()));
   return board.rows();
 };
@@ -34,15 +31,11 @@ window.countNRooksSolutions = function(n) {
   if (n <= 1) {
     return 1;
   }
-
   // window.calls = 0;
-
   var board = new Board({n: n});
   var availableCols = initializeAvailableCols(n);  
   var solutionCount = countNSolutionHelper(board, 0, availableCols);
-
   // console.log('RECURSIVE CALLS FOR COUNTING ' + n + ' ROOKS SOLUTIONS: ' + window.calls);
-
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
@@ -52,15 +45,11 @@ window.countNRooksSolutions = function(n) {
 window.findNQueensSolution = function(n) {
   var board = new Board({n: n});
   if (n > 0) {
-
     // window.calls = 0;
-
     var availableCols = initializeAvailableCols(n);    
     findNSolutionHelper(board, 0, availableCols, true);
   }
-
   // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' QUEENS SOLUTION: window.calls');
-
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(board.rows()));
   return board.rows();
 };
@@ -71,15 +60,11 @@ window.countNQueensSolutions = function(n) {
   if (n <= 0) {
     return 1;
   }
-
   // window.calls = 0;
-
   var board = new Board({n: n});
   var availableCols = initializeAvailableCols(n);  
   var solutionCount = countNSolutionHelper(board, 0, availableCols, true);
-
   // console.log('RECURSIVE CALLS FOR COUNTING ' + n + ' QUEENS SOLUTIONS: window.calls');
-
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
 };
@@ -89,87 +74,61 @@ window.countNQueensSolutions = function(n) {
 
 window.initializeAvailableCols = function(n) {
   var availableCols = [];
-
   for (var i = 0; i < n; i++) {
     availableCols.push(1);
   }
-
   return availableCols;
 };
 
 window.findNSolutionHelper = function(board, rowIndex, availableCols, isQueens) {
   // window.calls++;
   for (var i = 0; i < availableCols.length; i++) {
-
-    if (!availableCols[i]) continue;
-    board.togglePiece(rowIndex, i);
-    availableCols[i] = 0;
-
-    if (isQueens && (board.hasMajorDiagonalConflictAt(i - rowIndex)) ||
-        board.hasMinorDiagonalConflictAt(i + rowIndex)) {
+    if (availableCols[i]) {
       board.togglePiece(rowIndex, i);
-      availableCols[i] = 1;
-    } 
-
-    else {     
-    
-      if (rowIndex < board.get('n') - 1) {
-        
-        var result = findNSolutionHelper(board, rowIndex + 1, availableCols, isQueens);
-    
-        if (result) {
+      availableCols[i] = 0;
+      if (isQueens && (board.hasMajorDiagonalConflictAt(i - rowIndex)) ||
+          board.hasMinorDiagonalConflictAt(i + rowIndex)) {
+        board.togglePiece(rowIndex, i);
+        availableCols[i] = 1;
+      } else {     
+        if (rowIndex < board.get('n') - 1) {
+          if (findNSolutionHelper(board, rowIndex + 1, availableCols, isQueens)) {
+            return true;
+          } else {
+            board.togglePiece(rowIndex, i);
+            availableCols[i] = 1;
+          }
+        } else {
           return true;
-        } 
-
-        else {
-          board.togglePiece(rowIndex, i);
-          availableCols[i] = 1;
         }
-
-      } 
-
-      else {
-        return true;
       }
-
     }
-
   }
-
 };
+
 
 window.countNSolutionHelper = function(board, rowIndex, availableCols, isQueens) {
   // window.calls++;
   var count = 0;
   for (var i = 0; i < availableCols.length; i++) {
-
-    if (!availableCols[i]) continue;
-    board.togglePiece(rowIndex, i);
-    availableCols[i] = 0;
-
-    if (isQueens && (board.hasMajorDiagonalConflictAt(i - rowIndex) ||
-        board.hasMinorDiagonalConflictAt(i + rowIndex))) {
+    if (availableCols[i]) {
       board.togglePiece(rowIndex, i);
-      availableCols[i] = 1;
-    }
-
-    else {  
-
-      if (rowIndex < board.get('n') - 1) {
-        count += countNSolutionHelper(board, rowIndex + 1, availableCols, isQueens);        
-      } 
-
-      board.togglePiece(rowIndex, i);
-      availableCols[i] = 1;
-      
-      if (rowIndex === board.get('n') - 1) {
-        return 1;
+      availableCols[i] = 0;
+      if (isQueens && (board.hasMajorDiagonalConflictAt(i - rowIndex) ||
+          board.hasMinorDiagonalConflictAt(i + rowIndex))) {
+        board.togglePiece(rowIndex, i);
+        availableCols[i] = 1;
+      } else {  
+        if (rowIndex < board.get('n') - 1) {
+          count += countNSolutionHelper(board, rowIndex + 1, availableCols, isQueens);        
+        } 
+        board.togglePiece(rowIndex, i);
+        availableCols[i] = 1;
+        if (rowIndex === board.get('n') - 1) {
+          return 1;
+        }
       }
-
     }
-
   }
-
   return count;
-
 };

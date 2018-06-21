@@ -86,14 +86,14 @@ window.countNQueensSolutions = function(n) {
 
 const checkerNames = {
   rooks: 'hasAnyRooksConflicts', 
-  queens: 'hasAnyQueenConflictsOn'
+  queens: 'hasAnyQueensConflicts'
 };
 
 window.findNSolutionHelper = function(board, rowIndex, type) {
   // window.calls++;
   for (var i = 0; i < board.get('n'); i++) {
     board.togglePiece(rowIndex, i);
-    if (rowIndex && board[checkerNames[type]](rowIndex, i)) {
+    if (board[checkerNames[type]]()) {
       board.togglePiece(rowIndex, i);
     } else {     
       if (rowIndex < board.get('n') - 1) {
@@ -115,7 +115,7 @@ window.countNSolutionHelper = function(board, rowIndex, type) {
   var count = 0;
   for (var i = 0; i < board.get('n'); i++) {
     board.togglePiece(rowIndex, i);
-    if (rowIndex && board[checkerNames[type]](rowIndex, i)) {
+    if (board[checkerNames[type]](rowIndex, i)) {
       board.togglePiece(rowIndex, i);
     } else {     
       if (rowIndex < board.get('n') - 1) {
@@ -128,12 +128,3 @@ window.countNSolutionHelper = function(board, rowIndex, type) {
   }
   return count;
 };
-
-// window.findNSolutionHelperBitwise = function(board, rowIndex) {
- 
-// };
-
-// window.countNSolutionHelperBitwise = function(board, rowIndex) {
- 
-// };
-

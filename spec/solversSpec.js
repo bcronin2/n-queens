@@ -65,7 +65,7 @@ describe('solvers', function() {
     });
 
   });
-2
+
   describe('countNQueensSolutions()', function() {
 
     it('finds the number of valid solutions for n of 0-12', function() {

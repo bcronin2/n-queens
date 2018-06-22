@@ -169,7 +169,7 @@ window.countNQueensSolutionHelper = function(board, rowIndex, availableCols, ava
   // window.calls++;
   var count = 0;
   for (var i = 0; i < board.get('n'); i++) {
-    if (availableCols[i] && (availableMajorDiagonals[i - rowIndex] && availableMinorDiagonals[i + rowIndex])) {
+    if (availableCols[i] && availableMajorDiagonals[i - rowIndex] && availableMinorDiagonals[i + rowIndex]) {
       board.togglePiece(rowIndex, i);
       availableCols[i] = false;
       availableMajorDiagonals[i - rowIndex] = false;

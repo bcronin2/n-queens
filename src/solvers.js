@@ -18,7 +18,7 @@ window.findNRooksSolution = function(n) {
   if (n > 0) {
     // window.calls = 0;
     var availableCols = initializeAvailableCols(n);
-    findNSolutionHelper(board, 0, availableCols);
+    findNRooksSolutionHelper(board, 0, availableCols);
   }
   // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' ROOKS SOLUTION: ' + window.calls);
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board.rows()));
@@ -34,7 +34,7 @@ window.countNRooksSolutions = function(n) {
   // window.calls = 0;
   var board = new Board({n: n});
   var availableCols = initializeAvailableCols(n);  
-  var solutionCount = countNSolutionHelper(board, 0, availableCols);
+  var solutionCount = countNRooksSolutionHelper(board, 0, availableCols);
   // console.log('RECURSIVE CALLS FOR COUNTING ' + n + ' ROOKS SOLUTIONS: ' + window.calls);
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
@@ -46,8 +46,10 @@ window.findNQueensSolution = function(n) {
   var board = new Board({n: n});
   if (n > 0) {
     // window.calls = 0;
-    var availableCols = initializeAvailableCols(n);    
-    findNSolutionHelper(board, 0, availableCols, true);
+    var availableCols = initializeAvailableCols(n);
+    var availableMajorDiagonals = initializeAvailableMajorDiagonals(n);  
+    var availableMinorDiagonals = initializeAvailableMinorDiagonals(n);     
+    findNQueensSolutionHelper(board, 0, availableCols, availableMajorDiagonals, availableMinorDiagonals);
   }
   // console.log('RECURSIVE CALLS FOR FINDING ' + n + ' QUEENS SOLUTION: window.calls');
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(board.rows()));
@@ -62,8 +64,10 @@ window.countNQueensSolutions = function(n) {
   }
   // window.calls = 0;
   var board = new Board({n: n});
-  var availableCols = initializeAvailableCols(n);  
-  var solutionCount = countNSolutionHelper(board, 0, availableCols, true);
+  var availableCols = initializeAvailableCols(n);
+  var availableMajorDiagonals = initializeAvailableMajorDiagonals(n);  
+  var availableMinorDiagonals = initializeAvailableMinorDiagonals(n);    
+  var solutionCount = countNQueensSolutionHelper(board, 0, availableCols, availableMajorDiagonals, availableMinorDiagonals);
   // console.log('RECURSIVE CALLS FOR COUNTING ' + n + ' QUEENS SOLUTIONS: window.calls');
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
@@ -73,59 +77,112 @@ window.countNQueensSolutions = function(n) {
 // HELPERS
 
 window.initializeAvailableCols = function(n) {
-  var availableCols = [];
+  var availableCols = {};
   for (var i = 0; i < n; i++) {
-    availableCols.push(1);
+    availableCols[i] = true;
   }
   return availableCols;
 };
 
-window.findNSolutionHelper = function(board, rowIndex, availableCols, isQueens) {
+window.initializeAvailableMajorDiagonals = function(n) {
+  var availableMajorDiagonals = {};
+  for (var i = -n + 1; i < n; i++) {
+    availableMajorDiagonals[i] = true;
+  }
+  return availableMajorDiagonals;
+};
+
+window.initializeAvailableMinorDiagonals = function(n) {
+  var availableMinorDiagonals = {};
+  for (var i = 0; i < 2 * n - 1; i++) {
+    availableMinorDiagonals[i] = true;
+  }
+  return availableMinorDiagonals;
+};
+
+window.findNRooksSolutionHelper = function(board, rowIndex, availableCols) {
   // window.calls++;
-  for (var i = 0; i < availableCols.length; i++) {
+  for (var i = 0; i < board.get('n'); i++) {
     if (availableCols[i]) {
       board.togglePiece(rowIndex, i);
-      availableCols[i] = 0;
-      if (isQueens && (board.hasMajorDiagonalConflictAt(i - rowIndex)) ||
-          board.hasMinorDiagonalConflictAt(i + rowIndex)) {
-        board.togglePiece(rowIndex, i);
-        availableCols[i] = 1;
-      } else {     
-        if (rowIndex < board.get('n') - 1) {
-          if (findNSolutionHelper(board, rowIndex + 1, availableCols, isQueens)) {
-            return true;
-          } else {
-            board.togglePiece(rowIndex, i);
-            availableCols[i] = 1;
-          }
-        } else {
+      availableCols[i] = false;
+      if (rowIndex < board.get('n') - 1) {
+        if (findNRooksSolutionHelper(board, rowIndex + 1, availableCols)) {
           return true;
+        } else {
+          board.togglePiece(rowIndex, i);
+          availableCols[i] = true;
         }
+      } else {
+        return true;
       }
     }
   }
 };
 
-window.countNSolutionHelper = function(board, rowIndex, availableCols, isQueens) {
+window.countNRooksSolutionHelper = function(board, rowIndex, availableCols) {
   // window.calls++;
   var count = 0;
-  for (var i = 0; i < availableCols.length; i++) {
+  for (var i = 0; i < board.get('n'); i++) {
     if (availableCols[i]) {
       board.togglePiece(rowIndex, i);
-      availableCols[i] = 0;
-      if (isQueens && (board.hasMajorDiagonalConflictAt(i - rowIndex) ||
-          board.hasMinorDiagonalConflictAt(i + rowIndex))) {
-        board.togglePiece(rowIndex, i);
-        availableCols[i] = 1;
-      } else {  
-        if (rowIndex < board.get('n') - 1) {
-          count += countNSolutionHelper(board, rowIndex + 1, availableCols, isQueens);        
-        } 
-        board.togglePiece(rowIndex, i);
-        availableCols[i] = 1;
-        if (rowIndex === board.get('n') - 1) {
-          return 1;
+      availableCols[i] = false;
+      if (rowIndex < board.get('n') - 1) {
+        count += countNRooksSolutionHelper(board, rowIndex + 1, availableCols);        
+      } 
+      board.togglePiece(rowIndex, i);
+      availableCols[i] = true;
+      if (rowIndex === board.get('n') - 1) {
+        return 1;
+      }
+    }
+  }
+  return count;
+};
+
+window.findNQueensSolutionHelper = function(board, rowIndex, availableCols, availableMajorDiagonals, availableMinorDiagonals) {
+  // window.calls++;
+  for (var i = 0; i < board.get('n'); i++) {
+    if (availableCols[i] && availableMajorDiagonals[i - rowIndex] && availableMinorDiagonals[i + rowIndex]) {
+      board.togglePiece(rowIndex, i);
+      availableCols[i] = false;
+      availableMajorDiagonals[i - rowIndex] = false;
+      availableMinorDiagonals[i + rowIndex] = false;
+
+      if (rowIndex < board.get('n') - 1) {
+        if (findNQueensSolutionHelper(board, rowIndex + 1, availableCols, availableMajorDiagonals, availableMinorDiagonals)) {
+          return true;
+        } else {
+          board.togglePiece(rowIndex, i);
+          availableCols[i] = true;
+          availableMajorDiagonals[i - rowIndex] = true;
+          availableMinorDiagonals[i + rowIndex] = true;
         }
+      } else {
+        return true;
+      }
+    }
+  }
+};
+
+window.countNQueensSolutionHelper = function(board, rowIndex, availableCols, availableMajorDiagonals, availableMinorDiagonals) {
+  // window.calls++;
+  var count = 0;
+  for (var i = 0; i < board.get('n'); i++) {
+    if (availableCols[i] && (availableMajorDiagonals[i - rowIndex] && availableMinorDiagonals[i + rowIndex])) {
+      board.togglePiece(rowIndex, i);
+      availableCols[i] = false;
+      availableMajorDiagonals[i - rowIndex] = false;
+      availableMinorDiagonals[i + rowIndex] = false;
+      if (rowIndex < board.get('n') - 1) {
+        count += countNQueensSolutionHelper(board, rowIndex + 1, availableCols, availableMajorDiagonals, availableMinorDiagonals);        
+      } 
+      board.togglePiece(rowIndex, i);
+      availableCols[i] = true;
+      availableMajorDiagonals[i - rowIndex] = true;
+      availableMinorDiagonals[i + rowIndex] = true;
+      if (rowIndex === board.get('n') - 1) {
+        return 1;
       }
     }
   }
